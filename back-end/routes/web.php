@@ -14,5 +14,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 |
 */
 
-Route::get('/api/create-membership', "ClientsController@index");
+Route::get('/api/clients', "ClientsController@index");
 Route::post('/api/create-membership', "ClientsController@store");
+Route::get('/api/clients/:name', "ClientsController@findByName");
+Route::delete('/api/clients/delete', "ClientsController@remove");
