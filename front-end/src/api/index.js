@@ -9,6 +9,7 @@ export const fetchClients = async () => {
             ID: clientData.id,
             Client: clientData.name,
             ExpDate: clientData.membership_valid,
+            Status: null,
             Update: null,
             Delete: null
         }));

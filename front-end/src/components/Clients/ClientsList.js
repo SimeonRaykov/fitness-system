@@ -5,11 +5,14 @@ import { Form, Card } from 'react-bootstrap';
 import { fetchClients } from '../../api';
 import VerticallyCenteredModal from '../Modals/Modal';
 import notification from '../utils/toastify';
+import incrementDateBy30Days from '../utils/date-manipulations';
 
 export default function ClientsList() {
+  const DEFAULT_ROWS_PER_PAGE = 10;
   const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
-  const [modalShow, setModalShow] = useState(false);
+  const [updateModalShow, setUpdateModalShow] = useState(false);
+  const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [clientName, setClientName] = useState("");
 
   useEffect(() => {
@@ -17,23 +20,34 @@ export default function ClientsList() {
       setData(await fetchClients());
     }
     fetchAPI();
-  }, [], [handleClientDeletion]);
+  }, []);
 
   useEffect(() => {
     const fetchAPI = async () => {
       setData(await fetchClients());
     }
     fetchAPI();
-  }, [handleClientDeletion]);
+  }, [handleClientDeletion], [handleClientUpdate]);
+
+  function updateRow(row) {
+    setClientName(row.Client);
+    setUpdateModalShow(true);
+  }
 
   function deleteRow(row) {
     setClientName(row.Client);
-    setModalShow(true);
+    setDeleteModalShow(true);
   }
+
 
   function handleClientDeletion() {
     notification('success', 'Client deleted');
   }
+
+  function handleClientUpdate() {
+    notification('success', 'Membership updated');
+  }
+
 
   const headers = {
     Client: {
@@ -54,6 +68,20 @@ export default function ClientsList() {
       sortable: true,
       filterable: true,
     },
+    Status: {
+      text: 'Status',
+      invisible: false,
+      sortable: true,
+      filterable: true,
+      transform: (value, index, row) => {
+        const expDate = new Date(row.ExpDate);
+        const today = new Date();
+        const expired = checkIfDateIsExpired(today, expDate);
+        return (
+          expired ? 'Expired' : 'Valid'
+        )
+      }
+    },
     Update: {
       text: 'Update membership',
       invisible: false,
@@ -61,9 +89,10 @@ export default function ClientsList() {
       filterable: false,
       transform: (value, index, row) => {
         return (
-          <button className="btn btn-primary" onClick={() => deleteRow(row)}>
+          <button className="btn btn-primary" onClick={() => updateRow(row)
+          }>
             Update membership
-          </button>
+          </button >
         )
       }
     },
@@ -75,11 +104,38 @@ export default function ClientsList() {
       transform: (value, index, row) => {
         return (
           <button className="btn btn-danger" onClick={() => deleteRow(row)}>
-            Delete Row
+            Delete client
           </button>
         )
       },
     },
+  }
+
+  function checkIfDateIsExpired(today, expDate) {
+    let expired;
+    if (today.getFullYear() > expDate.getFullYear()) {
+      expired = true;
+    }
+    else if (today.getFullYear() === expDate.getFullYear()) {
+      if (today.getMonth() > expDate.getMonth()) {
+        expired = true;
+      }
+      else if (today.getMonth() === expDate.getMonth()) {
+        if (today.getDate() > expDate.getDate()) {
+          expired = true;
+        }
+        else {
+          expired = false;
+        }
+      }
+      else {
+        expired = false;
+      }
+    }
+    else {
+      expired = false;
+    }
+    return expired;
   }
 
   return (
@@ -94,17 +150,25 @@ export default function ClientsList() {
           name='test-table'
           className='ui compact selectable  table'
           sortable
-          perPage={10}
+          perPage={DEFAULT_ROWS_PER_PAGE}
           loader
           headers={headers}
           filterValue={searchValue}
         />
       </Card>
       <VerticallyCenteredModal
-        show={modalShow}
+        type={'update'}
+        show={updateModalShow}
         clientName={clientName}
-        onClientDeletion={handleClientDeletion}
-        onHide={() => setModalShow(false)}
+        onApiCall={handleClientUpdate}
+        onHide={() => setUpdateModalShow(false)}
+      />
+      <VerticallyCenteredModal
+        type={'delete'}
+        show={deleteModalShow}
+        clientName={clientName}
+        onApiCall={handleClientDeletion}
+        onHide={() => setDeleteModalShow(false)}
       />
     </div >
   )

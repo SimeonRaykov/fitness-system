@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import incrementDateBy30Days from '../utils/date-manipulations';
 
 export default function CreateCard() {
   const DEFAULT_MEMBERSHIP_PRICE = 45;
@@ -7,12 +8,6 @@ export default function CreateCard() {
   const [clientName, setClientName] = useState();
   const [price, setPrice] = useState(DEFAULT_MEMBERSHIP_PRICE);
   const [expirationDate, setExpirationDate] = useState(DEFAULT_EXPIRATION_DATE);
-
-  function incrementDateBy30Days() {
-    const today = new Date();
-    const incrementedDate = new Date(today.setMonth(today.getMonth() + 1));
-    return `${incrementedDate.getFullYear()}-${incrementedDate.getMonth() + 1 < 10 ? `0${incrementedDate.getMonth() + 1}` : incrementedDate.getMonth() + 1}-${incrementedDate.getDate() ? `0${incrementedDate.getDate()}` : incrementedDate.getDate()}`;
-  }
 
   function submitForm(e) {
     e.preventDefault();
@@ -51,11 +46,11 @@ export default function CreateCard() {
         </div>
         <div class="form-group">
           <label className="mr-3" for="expDate">Expiration date</label>
-          <input type="date" defaultValue={incrementDateBy30Days()} onChange={e => setExpirationDate(e.target.value)} />
+          <input type="date" defaultValue={DEFAULT_EXPIRATION_DATE} onChange={e => setExpirationDate(e.target.value)} />
         </div>
         <div class="form-group">
           <label className="mr-3" for="price">Price</label>
-          <input type="number" defaultValue={45} onChange={e => setPrice(e.target.value)} />
+          <input type="number" defaultValue={DEFAULT_MEMBERSHIP_PRICE} onChange={e => setPrice(e.target.value)} />
           <span> BGN</span>
         </div>
         <button className="btn btn-lg btn-primary" onClick={submitForm}>
