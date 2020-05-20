@@ -12,6 +12,8 @@ export default function ExpensesList() {
   const [data, setData] = useState([]);
   const [updateModalShow, setUpdateModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
+  const [id, setID] = useState();
+  const [amount, setAmount] = useState();
   const [expenseName, setExpenseName] = useState("");
 
   useEffect(() => {
@@ -33,6 +35,8 @@ export default function ExpensesList() {
   );
 
   function updateRow(row) {
+    setID(row.id);
+    setAmount(row.Amount);
     setExpenseName(row.Expense);
     setUpdateModalShow(true);
   }
@@ -51,6 +55,10 @@ export default function ExpensesList() {
   }
 
   const headers = {
+    id:{
+      text:'id',
+      invisible:true
+    },
     Expense: {
       text: "Expense",
       invisible: false,
@@ -121,17 +129,22 @@ export default function ExpensesList() {
           filterValue={searchValue}
         />
       </Card>
+      {amount?
       <UpdateModal
         type={type}
         show={updateModalShow}
         name={expenseName}
+        amount={amount}
+        id={id}
         onApiCall={handleExpenseUpdate}
         onHide={() => setUpdateModalShow(false)}
-      />
+        />
+      :''}
       <DeleteModal
         type={type}
         show={deleteModalShow}
         name={expenseName}
+        id={id}
         onApiCall={handleExpenseDeletion}
         onHide={() => setDeleteModalShow(false)}
       />

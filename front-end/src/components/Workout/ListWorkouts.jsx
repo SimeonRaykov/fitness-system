@@ -13,7 +13,8 @@ export default function ListWorkouts() {
   const [updateModalShow, setUpdateModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [workoutName, setWorkoutName] = useState("");
-  const [workoutID, setWorkoutID] = useState();
+  const [workoutID, setWorkoutID] = useState("");
+  const [workoutLink, setWorkoutLink] = useState("");
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -36,6 +37,7 @@ export default function ListWorkouts() {
   function updateRow(row) {
     setWorkoutName(row.Workout);
     setWorkoutID(row.id);
+    setWorkoutLink(row.Link);
     setUpdateModalShow(true);
   }
 
@@ -133,14 +135,17 @@ export default function ListWorkouts() {
           filterValue={searchValue}
         />
       </Card>
+      {workoutName?
       <UpdateModal
         type={type}
         show={updateModalShow}
         name={workoutName}
         id={workoutID}
+        link={workoutLink}
         onApiCall={handleWorkoutUpdate}
         onHide={() => setUpdateModalShow(false)}
       />
+:''}
       <DeleteModal
         type={type}
         show={deleteModalShow}

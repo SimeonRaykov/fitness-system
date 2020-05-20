@@ -15,6 +15,7 @@ import {
 } from "./components";
 import "bootstrap/dist/css/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./css/buttons.css";
 
 function App() {
   return (

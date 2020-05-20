@@ -16,7 +16,7 @@ export default function DeleteModal(props) {
   };
 
   function deleteClient() {
-    fetch("/api/clients/delete", {
+    fetch(`/api/clients/${id}`, {
       method: "delete",
       headers: {
         "Content-Type": "application/json",

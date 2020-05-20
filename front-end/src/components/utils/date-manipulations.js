@@ -5,7 +5,7 @@ export const incrementDateBy30Days = () => {
 }
 
 export const formatDate = (date) => {
-    return `${date.getFullYear()}-${date.getMonth()<10?`0${date.getMonth()}`:date.getMonth()}-${date.getDate()<10?`0${date.getDate()}`:date.getDate()}`;
+    return `${date.getFullYear()}-${date.getMonth()+1<10?`0${date.getMonth()+1}`:date.getMonth()+1}-${date.getDate()<10?`0${date.getDate()}`:date.getDate()}`;
 }
 
 export const formatToday = () => {
@@ -14,5 +14,5 @@ export const formatToday = () => {
 
 export const formatLastMonth = () => {
     const today = new Date();
-    return formatDate(new Date().setDate(today.getMonth() - 1));
+    return formatDate(new Date(new Date().setDate(today.getMonth() - 1)));
 }

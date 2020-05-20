@@ -8,6 +8,7 @@ const nth_occurrence = require("../utils/nth_occurrence");
 export default function Client() {
   const type = "client";
   const clientName = getClientName();
+  const [clientID, setClientID] = useState();
   const [clientData, setClientData] = useState([]);
   const [updateModalShow, setUpdateModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
@@ -78,7 +79,9 @@ export default function Client() {
           <Card.Subtitle className="mb-2 text-muted">
             ID: {clientData.id}
           </Card.Subtitle>
-          <Card.Text>Money transfered: {clientData.money_transfered}</Card.Text>
+          <Card.Text>Total money transfered: {clientData.money_transfered}</Card.Text>
+          <Card.Text>Membership expiration date: {clientData.membership_valid}</Card.Text>
+          <Card.Text>Membership status: {new Date(clientData.membership_valid) >= new Date()?'Valid':'Expired'}</Card.Text>
           <div className="row justify-content-center">
             <button className="btn btn-primary" onClick={() => updateClient()}>
               Update membership
@@ -93,6 +96,7 @@ export default function Client() {
         type={type}
         show={updateModalShow}
         name={clientData.name}
+        id={clientData.id}
         onApiCall={handleClientUpdate}
         onHide={() => setUpdateModalShow(false)}
       />
@@ -100,6 +104,7 @@ export default function Client() {
         type={type}
         show={deleteModalShow}
         name={clientData.name}
+        id={clientData.id}
         onApiCall={handleClientDelete}
         onHide={() => setDeleteModalShow(false)}
       />

@@ -15,6 +15,7 @@ export default function ClientsList() {
   const [updateModalShow, setUpdateModalShow] = useState(false);
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [clientName, setClientName] = useState("");
+  const [clientID, setClientID] = useState();
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -32,11 +33,13 @@ export default function ClientsList() {
 
   function updateRow(row) {
     setClientName(row.Client);
+    setClientID(row.ID);
     setUpdateModalShow(true);
   }
 
   function deleteRow(row) {
     setClientName(row.Client);
+    setClientID(row.ID);
     setDeleteModalShow(true);
   }
 
@@ -159,6 +162,7 @@ export default function ClientsList() {
         type={type}
         show={updateModalShow}
         name={clientName}
+        id={clientID}
         onApiCall={handleClientUpdate}
         onHide={() => setUpdateModalShow(false)}
       />
@@ -166,6 +170,7 @@ export default function ClientsList() {
         type={type}
         show={deleteModalShow}
         name={clientName}
+        id={clientID}
         onApiCall={handleClientDeletion}
         onHide={() => setDeleteModalShow(false)}
       />
