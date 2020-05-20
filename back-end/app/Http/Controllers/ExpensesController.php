@@ -76,7 +76,14 @@ class ExpensesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $expenseName = $request->input('name');
+        $amount = $request->input('price');
+        Expense::where('id', $id)->update(
+            [
+                'name' => $expenseName,
+                'amount' => $amount
+            ],
+        );
     }
 
     /**

@@ -46,12 +46,11 @@ class ClientsController extends Controller
         return http_response_code(201);
     }
 
-    public function updateMembership(Request $request)
+    public function updateMembership(Request $request, $id)
     {
-        $clientName = $request->input('name');
         $price = $request->input('price');
-        $expirationDate = $request->input('expirationDate');
-        Client::where('name', $clientName)->update(
+        $expirationDate = $request->input('date');
+        Client::where('id', $id)->update(
             [
                 'membership_valid' => $expirationDate,
                 'money_transfered' => DB::raw('money_transfered + ' . $price)
@@ -65,9 +64,8 @@ class ClientsController extends Controller
         $payment->save();
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
-        $clientName = $request->input('name');
-        Client::where('name', $clientName)->delete();
+        Client::where('id', $id)->delete();
     }
 }

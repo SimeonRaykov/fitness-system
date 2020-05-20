@@ -74,8 +74,15 @@ class WorkoutController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        //
+    { 
+        $workoutName = $request->input('name');
+        $workoutLink = $request->input('link');
+        Workout::where('id', $id)->update(
+            [
+                'name' => $workoutName,
+                'link' => $workoutLink
+            ],
+        );
     }
 
     /**

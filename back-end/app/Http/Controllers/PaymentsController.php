@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class PaymentsController extends Controller
 {
@@ -11,9 +13,22 @@ class PaymentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($fromDate, $toDate)
     {
-        //
+        return DB::select('WITH recursive all_dates(date) AS (
+            SELECT :fromDate date
+            UNION ALL
+            SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= :toDate
+    )
+    SELECT d.date date, \'payment\' AS type ,COALESCE(SUM(p.amount),0) AS payments
+            FROM all_dates d
+            LEFT JOIN payments p ON p.date = d.date
+            GROUP BY d.date
+            UNION
+    SELECT d.date date, \'expense\' AS type ,COALESCE(SUM(e.amount),0) AS expenses
+    FROM all_dates d
+    LEFT JOIN expenses e ON e.date = d.date
+    GROUP BY d.date', ['fromDate' => $fromDate, 'toDate' => $toDate]);
     }
 
     /**
