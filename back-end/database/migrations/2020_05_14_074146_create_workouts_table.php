@@ -16,7 +16,7 @@ class CreateWorkoutsTable extends Migration
         Schema::create('workouts', function (Blueprint $table) {
             $table->id();
             $table->string('name',45);
-            $table->string('link', 100);
+            $table->string('link', 200);
             $table->timestamps();
         });
     }

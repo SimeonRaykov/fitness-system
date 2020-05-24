@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Expense;
 use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ExpensesController extends Controller
 {
@@ -15,8 +17,12 @@ class ExpensesController extends Controller
      */
     public function index()
     {
-        $expenses = DB::table('expenses')->get();
-        return $expenses;
+        try {
+            $expenses = DB::table('expenses')->get();
+            return $expenses;
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Expenses not found!', 'type' => 'error']);
+        }
     }
 
     /**
@@ -37,12 +43,16 @@ class ExpensesController extends Controller
      */
     public function store(Request $request)
     {
-        $expense = new Expense;
-        $expense->name = $request->input('name');
-        $expense->amount = $request->input('amount');
-        $expense->date = $request->input('date');
-        $expense->save();
-        return http_response_code(201);
+        try {
+            $expense = new Expense;
+            $expense->name = $request->input('name');
+            $expense->amount = $request->input('amount');
+            $expense->date = $request->input('date');
+            $expense->save();
+            return response()->json(['message' => 'Expense created', 'type' => 'success']);
+        } catch (\Exception $ex) {
+            return response()->json(['message' => 'Expense error', 'type' => 'error']);
+        }
     }
 
     /**
@@ -76,14 +86,19 @@ class ExpensesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $expenseName = $request->input('name');
-        $amount = $request->input('price');
-        Expense::where('id', $id)->update(
-            [
-                'name' => $expenseName,
-                'amount' => $amount
-            ],
-        );
+        try {
+            $expenseName = $request->input('name');
+            $amount = $request->input('price');
+            Expense::where('id', $id)->update(
+                [
+                    'name' => $expenseName,
+                    'amount' => $amount
+                ],
+            );
+            return response()->json(['message' => 'Expense updated', 'type' => 'success']);
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Expense update failed', 'type' => 'error']);
+        }
     }
 
     /**
@@ -94,6 +109,13 @@ class ExpensesController extends Controller
      */
     public function destroy($name)
     {
-        Expense::where('name', $name)->delete();
+        try {
+            Expense::where('name', $name)->delete();
+            return response()->json(['message' => 'Expense deleted', 'type' => 'success']);
+        } catch (ModelNotFoundException $ex) {
+            return response()->json(['message' => 'Expense not found!', 'type' => 'error']);
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Delete exception', 'type' => 'error']);
+        }
     }
 }

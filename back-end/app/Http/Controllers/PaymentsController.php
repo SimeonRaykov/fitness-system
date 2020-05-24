@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Exception;
 
 class PaymentsController extends Controller
 {
@@ -13,9 +13,12 @@ class PaymentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    /* Get expenses and payments for given period */
     public function index($fromDate, $toDate)
     {
-        return DB::select('WITH recursive all_dates(date) AS (
+        try {
+            return DB::select('WITH recursive all_dates(date) AS (
             SELECT :fromDate date
             UNION ALL
             SELECT date + interval 1 day FROM all_dates WHERE date + interval 1 day <= :toDate
@@ -29,7 +32,11 @@ class PaymentsController extends Controller
     FROM all_dates d
     LEFT JOIN expenses e ON e.date = d.date
     GROUP BY d.date', ['fromDate' => $fromDate, 'toDate' => $toDate]);
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Profit get failed', 'type' => 'error']);
+        }
     }
+
 
     /**
      * Show the form for creating a new resource.

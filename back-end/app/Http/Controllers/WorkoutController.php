@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Workout;
 use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class WorkoutController extends Controller
 {
@@ -15,8 +17,12 @@ class WorkoutController extends Controller
      */
     public function index()
     {
-        $workouts = DB::table('workouts')->get();
-        return $workouts;
+        try {
+            $workouts = DB::table('workouts')->get();
+            return $workouts;
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Workouts not found!', 'type' => 'error']);
+        }
     }
 
     /**
@@ -37,11 +43,17 @@ class WorkoutController extends Controller
      */
     public function store(Request $request)
     {
-        $workout = new Workout;
-        $workout->name = $request->input('name');
-        $workout->link = $request->input('link');
-        $workout->save();
-        return http_response_code(201);
+        try {
+            $workout = new Workout;
+            $workout->name = $request->input('name');
+            $workout->link = $request->input('link');
+            $workout->save();
+            return response()->json(['message' => 'Workout created', 'type' => 'success']);
+        } catch (\Exception $ex) {
+            if ($ex->getCode() == 23000) {
+                return response()->json(['message' => 'Workout exists', 'type' => 'error']);
+            }
+        }
     }
 
     /**
@@ -74,15 +86,20 @@ class WorkoutController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    { 
-        $workoutName = $request->input('name');
-        $workoutLink = $request->input('link');
-        Workout::where('id', $id)->update(
-            [
-                'name' => $workoutName,
-                'link' => $workoutLink
-            ],
-        );
+    {
+        try {
+            $workoutName = $request->input('name');
+            $workoutLink = $request->input('link');
+            Workout::where('id', $id)->update(
+                [
+                    'name' => $workoutName,
+                    'link' => $workoutLink
+                ],
+            );
+            return response()->json(['message' => 'Workout updated', 'type' => 'success']);
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Workout update failed', 'type' => 'error']);
+        }
     }
 
     /**
@@ -93,6 +110,13 @@ class WorkoutController extends Controller
      */
     public function destroy($id)
     {
-        Workout::where('id', $id)->delete();
+        try {
+            Workout::where('id', $id)->delete();
+            return response()->json(['message' => 'Workout deleted', 'type' => 'success']);
+        } catch (ModelNotFoundException $ex) {
+            return response()->json(['message' => 'Workout not found!', 'type' => 'error']);
+        } catch (Exception $ex) {
+            return response()->json(['message' => 'Delete exception', 'type' => 'error']);
+        }
     }
 }
