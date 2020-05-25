@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Form, Button, Card } from "react-bootstrap";
 import { formatDate } from "../utils/date-manipulations";
+import notification from '../utils/toastify';
+
 export default function CreateExpense() {
   const today = new Date();
   const formattedToday = formatDate(today);
@@ -29,6 +31,11 @@ export default function CreateExpense() {
           date,
           amount,
         }),
+      }).then(res=>res.json())
+      .then(res=>{
+        if(res.message && res.type){
+          notification(res.type,res.message);  
+        }
       });
     }
   }

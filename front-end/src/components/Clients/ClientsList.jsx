@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import faker from 'faker'
+import React, { useState, useEffect, useCallback } from 'react';
 import SmartDataTable from 'react-smart-data-table';
 import { Form, Card } from 'react-bootstrap';
 import { fetchClients } from '../../api';
 import { UpdateModal, DeleteModal } from '../index';
-import notification from '../utils/toastify';
-import incrementDateBy30Days from '../utils/date-manipulations';
 
 export default function ClientsList() {
   const type = 'client';
@@ -16,6 +13,7 @@ export default function ClientsList() {
   const [deleteModalShow, setDeleteModalShow] = useState(false);
   const [clientName, setClientName] = useState("");
   const [clientID, setClientID] = useState();
+  const updateResults = useCallback();
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -29,7 +27,7 @@ export default function ClientsList() {
       setData(await fetchClients());
     }
     fetchAPI();
-  }, [handleClientDeletion], [handleClientUpdate]);
+  }, updateResults);
 
   function updateRow(row) {
     setClientName(row.Client);
@@ -41,14 +39,6 @@ export default function ClientsList() {
     setClientName(row.Client);
     setClientID(row.ID);
     setDeleteModalShow(true);
-  }
-
-  function handleClientDeletion() {
-    notification('success', 'Client deleted');
-  }
-
-  function handleClientUpdate() {
-    notification('success', 'Membership updated');
   }
 
   const headers = {
@@ -163,7 +153,6 @@ export default function ClientsList() {
         show={updateModalShow}
         name={clientName}
         id={clientID}
-        onApiCall={handleClientUpdate}
         onHide={() => setUpdateModalShow(false)}
       />
       <DeleteModal
@@ -171,7 +160,6 @@ export default function ClientsList() {
         show={deleteModalShow}
         name={clientName}
         id={clientID}
-        onApiCall={handleClientDeletion}
         onHide={() => setDeleteModalShow(false)}
       />
     </div >

@@ -1,9 +1,10 @@
 import React, { useState, Fragment } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { incrementDateBy30Days } from "../utils/date-manipulations";
+import notification from '../utils/toastify';
 
 export default function DeleteModal(props) {
-  let { name, onApiCall, type, id } = props;
+  let { name, type, id } = props;
   const DEFAULT_EXPIRATION_DATE = incrementDateBy30Days();
   const DEFAULT_PRICE = 45;
   const [expDate, setExpDate] = useState(DEFAULT_EXPIRATION_DATE);
@@ -25,8 +26,13 @@ export default function DeleteModal(props) {
       body: JSON.stringify({
         name,
       }),
-    });
-    onApiCall();
+    })
+    .then(response=>response.json())
+  .then(response=>{
+    if(response.message && response.type){
+      notification(response.type,response.message);  
+    }
+  });
     props.onHide();
   }
 
@@ -40,8 +46,12 @@ export default function DeleteModal(props) {
       body: JSON.stringify({
         name,
       }),
+    }).then(response=>response.json())
+    .then(response=>{
+      if(response.message && response.type){
+        notification(response.type,response.message);  
+      }
     });
-    onApiCall();
     props.onHide();
   }
 
@@ -55,8 +65,12 @@ export default function DeleteModal(props) {
       body: JSON.stringify({
         name,
       }),
+    }).then(response=>response.json())
+    .then(response=>{
+      if(response.message && response.type){
+        notification(response.type,response.message);  
+      }
     });
-    onApiCall();
     props.onHide();
   }
 

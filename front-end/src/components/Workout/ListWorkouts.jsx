@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SmartDataTable from "react-smart-data-table";
 import { Form, Card } from "react-bootstrap";
 import { fetchWorkouts } from "../../api";
 import { UpdateModal, DeleteModal } from "../index";
-import notification from "../utils/toastify";
 
 export default function ListWorkouts() {
   const type = "workout";
@@ -15,6 +14,7 @@ export default function ListWorkouts() {
   const [workoutName, setWorkoutName] = useState("");
   const [workoutID, setWorkoutID] = useState("");
   const [workoutLink, setWorkoutLink] = useState("");
+  const updateResults = useCallback();
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -23,16 +23,19 @@ export default function ListWorkouts() {
     fetchAPI();
   }, []);
 
-  useEffect(
-    () => {
-      const fetchAPI = async () => {
-        setData(await fetchWorkouts());
-      };
-      fetchAPI();
-    },
-    [handleWorkoutDeletion],
-    [handleWorkoutUpdate]
-  );
+  useEffect(() => {
+    const fetchAPI = async () => {
+      setData(await fetchWorkouts());
+    };
+    fetchAPI();
+  }, updateResults);
+
+  useEffect(() => {
+    const fetchAPI = async () => {
+      setData(await fetchWorkouts());
+    };
+    fetchAPI();
+  }, [updateResults]);
 
   function updateRow(row) {
     setWorkoutName(row.Workout);
@@ -45,14 +48,6 @@ export default function ListWorkouts() {
     setWorkoutName(row.Workout);
     setWorkoutID(row.id);
     setDeleteModalShow(true);
-  }
-
-  function handleWorkoutDeletion() {
-    notification("success", "Workout deleted");
-  }
-
-  function handleWorkoutUpdate() {
-    notification("success", "Workout updated");
   }
 
   const headers = {
@@ -142,7 +137,6 @@ export default function ListWorkouts() {
         name={workoutName}
         id={workoutID}
         link={workoutLink}
-        onApiCall={handleWorkoutUpdate}
         onHide={() => setUpdateModalShow(false)}
       />
 :''}
@@ -151,7 +145,6 @@ export default function ListWorkouts() {
         show={deleteModalShow}
         name={workoutName}
         id={workoutID}
-        onApiCall={handleWorkoutDeletion}
         onHide={() => setDeleteModalShow(false)}
       />
     </div>

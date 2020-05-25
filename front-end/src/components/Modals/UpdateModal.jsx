@@ -1,9 +1,10 @@
 import React, { useState, Fragment } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { incrementDateBy30Days } from "../utils/date-manipulations";
+import notification from '../utils/toastify';
 
 export default function UpdateModal(props) {
-  let { name, onApiCall, type, id, date, link, amount } = props;
+  let { name, type, id, date, link, amount } = props;
   const DEFAULT_EXPIRATION_DATE = incrementDateBy30Days();
   const DEFAULT_PRICE = 45;
   const [updateDate, setUpdateDate] = useState(date || DEFAULT_EXPIRATION_DATE);
@@ -29,8 +30,12 @@ export default function UpdateModal(props) {
         date:updateDate,
         price,
       }),
+    }).then(response=>response.json())
+    .then(response=>{
+      if(response.message && response.type){
+        notification(response.type,response.message);  
+      }
     });
-    onApiCall();
     props.onHide();
   }
 
@@ -45,14 +50,17 @@ export default function UpdateModal(props) {
         name:inputName,
         price,
       }),
+    }).then(response=>response.json())
+    .then(response=>{
+      if(response.message && response.type){
+        notification(response.type,response.message);  
+      }
     });
-    onApiCall();
     props.onHide();
   }
 
   function updateWorkout()
    {
-    console.log(name, workoutLink);
      fetch(`/api/update-workout/${id}`, {
     method: "put",
     headers: {
@@ -62,9 +70,13 @@ export default function UpdateModal(props) {
     body: JSON.stringify({
       name:inputName,
       link:workoutLink
-    }),
+    })
+  }).then(response=>response.json())
+  .then(response=>{
+    if(response.message && response.type){
+      notification(response.type,response.message);  
+    }
   });
-  onApiCall();
   props.onHide();}
 
   return (

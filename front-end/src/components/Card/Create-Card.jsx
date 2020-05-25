@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card } from "react-bootstrap";
 import { incrementDateBy30Days } from "../utils/date-manipulations";
+import notification from '../utils/toastify';
 
 export default function CreateCard() {
   const DEFAULT_MEMBERSHIP_PRICE = 45;
@@ -26,6 +27,11 @@ export default function CreateCard() {
           price: price,
           expirationDate: expirationDate,
         }),
+      }).then(response=>response.json())
+      .then(response=>{
+        if(response.message && response.type){
+          notification(response.type,response.message);  
+        }
       });
     }
   }

@@ -17,6 +17,13 @@ export default function Profit() {
     fetchAPI();
 }, []);
 
+function getProfits(){
+  const fetchAPI = async () => {
+    setData(await fetchAmount(fromDate, toDate));
+}
+fetchAPI();
+}
+
 function toggleCharts(){
 setChecked(!checked);
 }
@@ -99,6 +106,11 @@ setChecked(!checked);
     <label class="tgl-btn" data-tg-off="Line" data-tg-on="Bar" for="cb3"></label>
     </div>
     {checked?barChart:lineChart}
+    <div className="row justify-content-center mt-3">
+    <input type="date" onChange={e=>setFromDate(e.target.value)} className="mr-3" value={fromDate}/>
+    <input type="date" onChange={e=>setToDate(e.target.value)} value={toDate}/>
+    </div>
+    <button onClick={getProfits} className="button profits mt-5">Get profits</button>
     </div>
   );
 }

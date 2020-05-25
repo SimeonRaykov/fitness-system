@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card } from "react-bootstrap";
+import notification from '../utils/toastify';
 
 export default function CreateWorkout() {
-  const [workoutName, setWorkoutName] = useState();
-  const [workoutLink, setWorkoutLink] = useState();
+  const [workoutName, setWorkoutName] = useState('');
+  const [workoutLink, setWorkoutLink] = useState('');
 
   function submitForm(e) {
     e.preventDefault();
@@ -20,6 +21,11 @@ export default function CreateWorkout() {
           name: workoutName,
           link: workoutLink,
         }),
+      }).then(res=>res.json())
+      .then(res=>{
+        if(res.message && res.type){
+          notification(res.type,res.message);
+        }
       });
     }
   }
@@ -33,7 +39,7 @@ export default function CreateWorkout() {
           <Form.Group controlId="name">
             <Form.Label>Workout</Form.Label>
             <Form.Control
-              autocomplete="off"
+              autocomplete="off" 
               value={workoutName}
               onChange={(e) => setWorkoutName(e.target.value)}
               type="text"

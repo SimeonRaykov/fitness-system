@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SmartDataTable from "react-smart-data-table";
 import { Form, Card } from "react-bootstrap";
 import { fetchExpenses } from "../../api";
 import { UpdateModal, DeleteModal } from "../index";
-import notification from "../utils/toastify";
 
 export default function ExpensesList() {
   const type = "expense";
@@ -15,6 +14,7 @@ export default function ExpensesList() {
   const [id, setID] = useState();
   const [amount, setAmount] = useState();
   const [expenseName, setExpenseName] = useState("");
+  const updateResults = useCallback();
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -23,16 +23,12 @@ export default function ExpensesList() {
     fetchAPI();
   }, []);
 
-  useEffect(
-    () => {
-      const fetchAPI = async () => {
-        setData(await fetchExpenses());
-      };
-      fetchAPI();
-    },
-    [handleExpenseDeletion],
-    [handleExpenseUpdate]
-  );
+  useEffect(() => {
+    const fetchAPI = async () => {
+      setData(await fetchExpenses());
+    };
+    fetchAPI();
+  }, updateResults);
 
   function updateRow(row) {
     setID(row.id);
@@ -44,14 +40,6 @@ export default function ExpensesList() {
   function deleteRow(row) {
     setExpenseName(row.Expense);
     setDeleteModalShow(true);
-  }
-
-  function handleExpenseDeletion() {
-    notification("success", "Expense deleted");
-  }
-
-  function handleExpenseUpdate() {
-    notification("success", "Expense updated");
   }
 
   const headers = {
@@ -136,7 +124,6 @@ export default function ExpensesList() {
         name={expenseName}
         amount={amount}
         id={id}
-        onApiCall={handleExpenseUpdate}
         onHide={() => setUpdateModalShow(false)}
         />
       :''}
@@ -145,7 +132,6 @@ export default function ExpensesList() {
         show={deleteModalShow}
         name={expenseName}
         id={id}
-        onApiCall={handleExpenseDeletion}
         onHide={() => setDeleteModalShow(false)}
       />
     </div>
